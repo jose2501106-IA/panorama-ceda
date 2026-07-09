@@ -1,0 +1,59 @@
+{
+  "actualizado": "2026-07-08 05:30",
+  "precios": [
+    {
+      "producto": "Jitomate saladette",
+      "presentacion": "caja 15 kg",
+      "calidad": "primera",
+      "precio_min": 280,
+      "precio_frec": 310,
+      "precio_max": 340,
+      "variacion_dia": 8.5,
+      "tendencia": "alza",
+      "racha_dias": 3,
+      "nota": "Llegó poco de Sinaloa, se espera que siga subiendo"
+    },
+    {
+      "producto": "Cebolla blanca",
+      "presentacion": "arpilla 25 kg",
+      "calidad": "primera",
+      "precio_min": 190,
+      "precio_frec": 210,
+      "precio_max": 230,
+      "variacion_dia": -1.2,
+      "tendencia": "estable",
+      "racha_dias": 0,
+      "nota": ""
+    },
+    {
+      "producto": "Papa alpha",
+      "presentacion": "bulto 25 kg",
+      "calidad": "primera",
+      "precio_min": 320,
+      "precio_frec": 340,
+      "precio_max": 360,
+      "variacion_dia": -4.8,
+      "tendencia": "baja",
+      "racha_dias": 2,
+      "nota": "Se está quedando, bajando desde el lunes"
+    }
+  ],
+  "factores": [
+    {
+      "tipo": "clima",
+      "descripcion": "Pronóstico de helada en zonas productoras de Sinaloa (SMN)",
+      "productos": ["Jitomate saladette"],
+      "direccion": "alza"
+    },
+    {
+      "tipo": "flete",
+      "descripcion": "Sin bloqueos carreteros reportados en rutas principales",
+      "productos": [],
+      "direccion": "estable"
+    }
+  ],
+  "recomendaciones": [
+    "Surtir jitomate hoy: 3 días subiendo y llegó poco; la helada en Sinaloa puede empujarlo más.",
+    "La papa sigue bajando: si puedes esperar 1-2 días, probablemente compres más barato."
+  ]
+}

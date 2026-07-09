@@ -1,0 +1,10 @@
+# Datos reales de clientes y del negocio — NUNCA al repo
+historico_precios.csv
+clientes*.csv
+contactos*
+*.env
+.env*
+
+# Sistema
+.DS_Store
+node_modules/

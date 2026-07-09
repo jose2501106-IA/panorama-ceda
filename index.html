@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panorama CEDA — Precios de la Central de Abasto</title>
+<style>
+  :root {
+    --azul: #1f4e5f; --verde: #2e7d32; --rojo: #c62828; --gris: #667;
+    --fondo: #f4f6f7; --tarjeta: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--fondo); color: #222; }
+  header { background: var(--azul); color: #fff; padding: 18px 16px 14px; }
+  header h1 { font-size: 1.25rem; }
+  header .sub { font-size: .8rem; opacity: .85; margin-top: 4px; }
+  main { max-width: 560px; margin: 0 auto; padding: 14px 12px 40px; }
+  h2 { font-size: .95rem; color: var(--azul); text-transform: uppercase; letter-spacing: .04em; margin: 18px 4px 8px; }
+  .card { background: var(--tarjeta); border-radius: 12px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .prod-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .prod-nombre { font-weight: 700; font-size: 1.02rem; }
+  .prod-meta { font-size: .78rem; color: var(--gris); margin-top: 2px; }
+  .precio { font-size: 1.35rem; font-weight: 800; white-space: nowrap; }
+  .rango { font-size: .78rem; color: var(--gris); text-align: right; }
+  .fila2 { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .badge { font-size: .75rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .alza { background: #fdecea; color: var(--rojo); }
+  .baja { background: #e8f5e9; color: var(--verde); }
+  .estable { background: #eceff1; color: #455a64; }
+  .var { font-size: .85rem; font-weight: 700; }
+  .nota { font-size: .82rem; color: #555; margin-top: 8px; border-left: 3px solid #cfd8dc; padding-left: 8px; font-style: italic; }
+  .factor-tipo { font-size: .7rem; font-weight: 800; text-transform: uppercase; color: var(--azul); letter-spacing: .05em; }
+  .factor-desc { font-size: .88rem; margin-top: 3px; }
+  .reco { display: flex; gap: 10px; align-items: flex-start; }
+  .reco .num { background: var(--verde); color: #fff; border-radius: 50%; min-width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 800; margin-top: 2px; }
+  .reco p { font-size: .9rem; line-height: 1.4; }
+  footer { text-align: center; font-size: .72rem; color: var(--gris); padding: 18px; }
+  #error { display: none; margin: 20px 8px; padding: 14px; background: #fff8e1; border-radius: 10px; font-size: .85rem; line-height: 1.5; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Panorama CEDA</h1>
+  <div class="sub" id="actualizado">Cargando…</div>
+</header>
+<main>
+  <div id="error">
+    No se pudieron cargar los datos. Si abriste este archivo con doble clic, el navegador bloquea la lectura local de <code>datos/datos.json</code>.<br><br>
+    <b>Solución:</b> en la terminal, dentro de la carpeta del proyecto, corre <code>python3 -m http.server 8000</code> y abre <code>http://localhost:8000</code>. En GitHub Pages funciona directo.
+  </div>
+  <section id="sec-precios" hidden>
+    <h2>Precios de hoy</h2>
+    <div id="precios"></div>
+  </section>
+  <section id="sec-factores" hidden>
+    <h2>¿Por qué se va a mover el precio?</h2>
+    <div id="factores"></div>
+  </section>
+  <section id="sec-recos" hidden>
+    <h2>Recomendaciones de hoy</h2>
+    <div id="recos"></div>
+  </section>
+</main>
+<footer>Datos capturados en persona en la Central de Abasto · Información confidencial para clientes del servicio</footer>
+<script>
+const fmt = n => '$' + Number(n).toLocaleString('es-MX');
+const flecha = t => t === 'alza' ? '▲' : t === 'baja' ? '▼' : '▶';
+
+fetch('datos/datos.json')
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(d => {
+    document.getElementById('actualizado').textContent = 'Actualizado: ' + d.actualizado;
+
+    const cont = document.getElementById('precios');
+    d.precios.forEach(p => {
+      const varTxt = (p.variacion_dia > 0 ? '+' : '') + p.variacion_dia + '% vs ayer';
+      const varColor = p.variacion_dia > 2 ? 'var(--rojo)' : p.variacion_dia < -2 ? 'var(--verde)' : '#455a64';
+      const racha = p.racha_dias >= 2 ? ` · ${p.racha_dias} días de racha` : '';
+      cont.insertAdjacentHTML('beforeend', `
+        <div class="card">
+          <div class="prod-top">
+            <div>
+              <div class="prod-nombre">${p.producto}</div>
+              <div class="prod-meta">${p.presentacion} · ${p.calidad}</div>
+            </div>
+            <div>
+              <div class="precio">${fmt(p.precio_frec)}</div>
+              <div class="rango">min ${fmt(p.precio_min)} · max ${fmt(p.precio_max)}</div>
+            </div>
+          </div>
+          <div class="fila2">
+            <span class="badge ${p.tendencia}">${flecha(p.tendencia)} ${p.tendencia.toUpperCase()}${racha}</span>
+            <span class="var" style="color:${varColor}">${varTxt}</span>
+          </div>
+          ${p.nota ? `<div class="nota">${p.nota}</div>` : ''}
+        </div>`);
+    });
+
+    const fac = document.getElementById('factores');
+    d.factores.forEach(f => {
+      const prods = f.productos.length ? ` · afecta: ${f.productos.join(', ')}` : '';
+      fac.insertAdjacentHTML('beforeend', `
+        <div class="card">
+          <div class="factor-tipo">${f.tipo} · presión: ${f.direccion}</div>
+          <div class="factor-desc">${f.descripcion}${prods}</div>
+        </div>`);
+    });
+
+    const rec = document.getElementById('recos');
+    d.recomendaciones.forEach((r, i) => {
+      rec.insertAdjacentHTML('beforeend', `
+        <div class="card reco"><div class="num">${i + 1}</div><p>${r}</p></div>`);
+    });
+
+    ['sec-precios', 'sec-factores', 'sec-recos'].forEach(id => document.getElementById(id).hidden = false);
+  })
+  .catch(() => {
+    document.getElementById('actualizado').textContent = 'Sin datos';
+    document.getElementById('error').style.display = 'block';
+  });
+</script>
+</body>
+</html>
