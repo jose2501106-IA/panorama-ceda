@@ -93,6 +93,6 @@ Clientes de pago · ingreso recurrente mensual · retención (85%+) · días con
 
 ## 9. Estado actual del código
 
-- `index.html` — Fase 1 inicial: lee `datos/datos.json`, muestra precios del día, tendencias y factores externos. Mobile-first, sin dependencias externas.
-- `datos/datos.json` — datos de EJEMPLO (reemplazar con datos reales cada madrugada).
-- Pendiente: publicar en GitHub Pages, afinar diseño, agregar mini-gráficas de tendencia.
+- `index.html` — Fase 1: precios del día, mini-gráficas SVG de 7 días (`historial_7d` en el JSON), factores externos, recomendaciones y botón CTA de WhatsApp. Mobile-first, sin dependencias externas.
+- `datos/datos.json` — datos de EJEMPLO (reemplazar con datos reales cada madrugada). Cada producto puede llevar `historial_7d: [7 precios]` para la mini-gráfica.
+- Pendiente (lo hace José): reemplazar `52XXXXXXXXXX` por su número de WhatsApp en el CTA de `index.html`, crear repo en GitHub y hacer push, activar GitHub Pages o Vercel.

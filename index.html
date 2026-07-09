@@ -29,6 +29,10 @@
   .estable { background: #eceff1; color: #455a64; }
   .var { font-size: .85rem; font-weight: 700; }
   .nota { font-size: .82rem; color: #555; margin-top: 8px; border-left: 3px solid #cfd8dc; padding-left: 8px; font-style: italic; }
+  .spark-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid #eef1f2; }
+  .spark-label { font-size: .72rem; color: var(--gris); }
+  .spark-row svg { display: block; }
+  .cta { display: block; text-align: center; background: var(--verde); color: #fff; text-decoration: none; font-weight: 700; padding: 13px; border-radius: 12px; margin-top: 22px; font-size: .95rem; }
   .factor-tipo { font-size: .7rem; font-weight: 800; text-transform: uppercase; color: var(--azul); letter-spacing: .05em; }
   .factor-desc { font-size: .88rem; margin-top: 3px; }
   .reco { display: flex; gap: 10px; align-items: flex-start; }
@@ -59,12 +63,33 @@
   <section id="sec-recos" hidden>
     <h2>Recomendaciones de hoy</h2>
     <div id="recos"></div>
+    <!-- Reemplaza 52XXXXXXXXXX con tu número de WhatsApp (52 + 10 dígitos) -->
+    <a class="cta" href="https://wa.me/52XXXXXXXXXX?text=Hola%20José,%20quiero%20el%20Panorama%20CEDA%20con%20mis%20productos">
+      ¿Quieres este panorama con TUS productos? Escríbeme
+    </a>
   </section>
 </main>
 <footer>Datos capturados en persona en la Central de Abasto · Información confidencial para clientes del servicio</footer>
 <script>
 const fmt = n => '$' + Number(n).toLocaleString('es-MX');
 const flecha = t => t === 'alza' ? '▲' : t === 'baja' ? '▼' : '▶';
+
+// Mini-gráfica SVG de los últimos 7 días
+function sparkline(datos, tendencia) {
+  if (!Array.isArray(datos) || datos.length < 2) return '';
+  const W = 130, H = 34, PAD = 3;
+  const min = Math.min(...datos), max = Math.max(...datos);
+  const rango = (max - min) || 1;
+  const x = i => PAD + i * (W - 2 * PAD) / (datos.length - 1);
+  const y = v => H - PAD - (v - min) * (H - 2 * PAD) / rango;
+  const pts = datos.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const color = tendencia === 'alza' ? '#c62828' : tendencia === 'baja' ? '#2e7d32' : '#607d8b';
+  const ux = x(datos.length - 1).toFixed(1), uy = y(datos[datos.length - 1]).toFixed(1);
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-label="tendencia 7 días">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${ux}" cy="${uy}" r="3" fill="${color}"/>
+  </svg>`;
+}
 
 fetch('datos/datos.json')
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
@@ -92,6 +117,7 @@ fetch('datos/datos.json')
             <span class="badge ${p.tendencia}">${flecha(p.tendencia)} ${p.tendencia.toUpperCase()}${racha}</span>
             <span class="var" style="color:${varColor}">${varTxt}</span>
           </div>
+          ${p.historial_7d ? `<div class="spark-row"><span class="spark-label">Últimos 7 días<br>min ${fmt(Math.min(...p.historial_7d))} · max ${fmt(Math.max(...p.historial_7d))}</span>${sparkline(p.historial_7d, p.tendencia)}</div>` : ''}
           ${p.nota ? `<div class="nota">${p.nota}</div>` : ''}
         </div>`);
     });
