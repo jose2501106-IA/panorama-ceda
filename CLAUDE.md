@@ -66,6 +66,16 @@ Fuentes gratuitas a consultar/mostrar:
 
 **Regla editorial:** se reporta el hecho y la dirección esperada ("helada en Sinaloa → presión al alza en jitomate"), NUNCA magnitudes inventadas. Si no hay certeza: "incierto". La credibilidad es el producto.
 
+## 5.5 Motor de estimación (propuesta de valor central, decidida por José)
+
+El valor agregado del servicio: **anticipar cómo los factores externos moverán los precios internos de la CEDA, por producto y calidad.** Se construye en 3 niveles, en orden estricto:
+
+1. **Nivel 1 (ya):** estimación de DIRECCIÓN por producto/calidad (alza|baja|estable|incierto) a partir de factores externos + lo visto en pasillo. Nunca cifras inventadas.
+2. **Nivel 2 (desde que haya 2-4 semanas de histórico):** marcador público de aciertos ("esta semana: 8/10 direcciones correctas"). El historial de puntería es el argumento de venta principal.
+3. **Nivel 3 (con 3+ meses de histórico propio + datos de clientes):** estimación de RANGOS numéricos por calidad, calibrada contra captura real. Solo se publica cuando el error histórico sea presentable.
+
+**Datos de clientes:** solo con consentimiento explícito (aviso de privacidad, LFPDPPP). Se usan únicamente para calibrar estimaciones y en forma agregada; jamás se revelan ni individualizan. Dar de vuelta valor por esos datos (mejores estimaciones para quien aporta).
+
 ## 6. Los 10 puntos de "app vendible" — cuándo aplica cada uno
 
 | Punto | ¿Cuándo? |
