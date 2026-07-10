@@ -91,10 +91,28 @@ function sparkline(datos, tendencia) {
   </svg>`;
 }
 
-fetch('datos/datos.json')
-  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-  .then(d => {
-    document.getElementById('actualizado').textContent = 'Actualizado: ' + d.actualizado;
+// Datos de respaldo: permiten abrir el archivo directo (sin servidor/internet), ideal para demos.
+// Mantener sincronizado con datos/datos.json cuando cambie la estructura.
+const DATOS_DEMO = {
+  actualizado: "2026-07-09 05:30",
+  precios: [
+    { producto: "Guayaba", presentacion: "caja 10 kg", calidad: "primera", precio_min: 170, precio_frec: 195, precio_max: 220, variacion_dia: 5.4, tendencia: "alza", racha_dias: 2, historial_7d: [178, 175, 180, 182, 179, 185, 195], nota: "Entró menos de Calvillo; revisar calidad de lo rezagado" },
+    { producto: "Jitomate saladette", presentacion: "caja 15 kg", calidad: "primera", precio_min: 280, precio_frec: 310, precio_max: 340, variacion_dia: 8.5, tendencia: "alza", racha_dias: 3, historial_7d: [255, 258, 252, 262, 275, 286, 310], nota: "Llegó poco de Sinaloa, se espera que siga subiendo" },
+    { producto: "Papa alpha", presentacion: "bulto 25 kg", calidad: "primera", precio_min: 320, precio_frec: 340, precio_max: 360, variacion_dia: -4.8, tendencia: "baja", racha_dias: 2, historial_7d: [378, 375, 380, 372, 368, 357, 340], nota: "Se está quedando, bajando desde el lunes" }
+  ],
+  factores: [
+    { tipo: "clima", descripcion: "Pronóstico de helada en zonas productoras de Sinaloa (SMN)", productos: ["Jitomate saladette"], direccion: "alza" },
+    { tipo: "cosecha", descripcion: "Baja el corte de guayaba en Calvillo por fin de temporada", productos: ["Guayaba"], direccion: "alza" }
+  ],
+  recomendaciones: [
+    "Guayaba: 2 días subiendo y entra menos; si tienes buena calidad, aguanta precio.",
+    "Surtir jitomate hoy: 3 días subiendo y llegó poco.",
+    "La papa sigue bajando: si puedes esperar 1-2 días, compras más barato."
+  ]
+};
+
+function pinta(d, esDemo) {
+    document.getElementById('actualizado').textContent = 'Actualizado: ' + d.actualizado + (esDemo ? ' · DEMO con datos de ejemplo' : '');
 
     const cont = document.getElementById('precios');
     d.precios.forEach(p => {
@@ -139,11 +157,12 @@ fetch('datos/datos.json')
     });
 
     ['sec-precios', 'sec-factores', 'sec-recos'].forEach(id => document.getElementById(id).hidden = false);
-  })
-  .catch(() => {
-    document.getElementById('actualizado').textContent = 'Sin datos';
-    document.getElementById('error').style.display = 'block';
-  });
+}
+
+fetch('datos/datos.json')
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(d => pinta(d, false))
+  .catch(() => pinta(DATOS_DEMO, true)); // sin servidor (file://) usa los datos de respaldo
 </script>
 </body>
 </html>

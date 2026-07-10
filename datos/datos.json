@@ -2,6 +2,19 @@
   "actualizado": "2026-07-08 05:30",
   "precios": [
     {
+      "producto": "Guayaba",
+      "presentacion": "caja 10 kg",
+      "calidad": "primera",
+      "precio_min": 170,
+      "precio_frec": 195,
+      "precio_max": 220,
+      "variacion_dia": 5.4,
+      "tendencia": "alza",
+      "racha_dias": 2,
+      "historial_7d": [178, 175, 180, 182, 179, 185, 195],
+      "nota": "EJEMPLO: corregir con precio real antes de la reunión"
+    },
+    {
       "producto": "Jitomate saladette",
       "presentacion": "caja 15 kg",
       "calidad": "primera",
