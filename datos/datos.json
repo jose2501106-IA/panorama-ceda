@@ -1,5 +1,6 @@
 {
   "actualizado": "2026-07-08 05:30",
+  "aciertos_semana": { "correctas": null, "total": null },
   "precios": [
     {
       "producto": "Guayaba",
@@ -11,6 +12,7 @@
       "variacion_dia": 0,
       "tendencia": "estable",
       "racha_dias": 0,
+      "estimacion": { "direccion": "alza", "factor": "Baja el corte en Calvillo por fin de temporada: menos entrada presiona al alza en calidades altas." },
       "escala_calidades": [
         { "calidad": "madura", "precio": "50-70" },
         { "calidad": "chiquita", "precio": "100" },
@@ -33,6 +35,7 @@
       "variacion_dia": 8.5,
       "tendencia": "alza",
       "racha_dias": 3,
+      "estimacion": { "direccion": "alza", "factor": "Pronóstico de helada en Sinaloa (SMN): llega menos producto, presión al alza." },
       "historial_7d": [255, 258, 252, 262, 275, 286, 310],
       "nota": "Llegó poco de Sinaloa, se espera que siga subiendo"
     },
@@ -46,6 +49,7 @@
       "variacion_dia": -1.2,
       "tendencia": "estable",
       "racha_dias": 0,
+      "estimacion": { "direccion": "estable", "factor": "Abasto normal y sin bloqueos en rutas: sin presión clara para hoy." },
       "historial_7d": [212, 208, 215, 210, 214, 213, 210],
       "nota": ""
     },
@@ -59,6 +63,7 @@
       "variacion_dia": -4.8,
       "tendencia": "baja",
       "racha_dias": 2,
+      "estimacion": { "direccion": "baja", "factor": "Se está quedando producto en pasillo: sobreoferta empuja el precio a la baja." },
       "historial_7d": [378, 375, 380, 372, 368, 357, 340],
       "nota": "Se está quedando, bajando desde el lunes"
     }

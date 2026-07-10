@@ -8,3 +8,4 @@ contactos*
 # Sistema
 .DS_Store
 node_modules/
+.claude/

@@ -27,6 +27,14 @@
   .alza { background: #fdecea; color: var(--rojo); }
   .baja { background: #e8f5e9; color: var(--verde); }
   .estable { background: #eceff1; color: #455a64; }
+  .incierto { background: #fff3e0; color: #ef6c00; }
+  .marcador { background: var(--azul); color: #fff; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .marcador .m-label { font-size: .82rem; opacity: .9; line-height: 1.3; }
+  .marcador .m-valor { font-size: 1.5rem; font-weight: 800; white-space: nowrap; }
+  .est { display: flex; align-items: flex-start; gap: 10px; }
+  .est .est-nombre { font-weight: 700; font-size: .98rem; }
+  .est .est-factor { font-size: .84rem; color: #555; margin-top: 4px; line-height: 1.4; }
+  .est .badge { margin-top: 2px; }
   .var { font-size: .85rem; font-weight: 700; }
   .nota { font-size: .82rem; color: #555; margin-top: 8px; border-left: 3px solid #cfd8dc; padding-left: 8px; font-style: italic; }
   .spark-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid #eef1f2; }
@@ -52,6 +60,11 @@
     No se pudieron cargar los datos. Si abriste este archivo con doble clic, el navegador bloquea la lectura local de <code>datos/datos.json</code>.<br><br>
     <b>Solución:</b> en la terminal, dentro de la carpeta del proyecto, corre <code>python3 -m http.server 8000</code> y abre <code>http://localhost:8000</code>. En GitHub Pages funciona directo.
   </div>
+  <section id="sec-estimacion" hidden>
+    <h2>Estimación de hoy</h2>
+    <div id="marcador"></div>
+    <div id="estimacion"></div>
+  </section>
   <section id="sec-precios" hidden>
     <h2>Precios de hoy</h2>
     <div id="precios"></div>
@@ -72,7 +85,7 @@
 <footer>Datos capturados en persona en la Central de Abasto · Información confidencial para clientes del servicio</footer>
 <script>
 const fmt = n => '$' + Number(n).toLocaleString('es-MX');
-const flecha = t => t === 'alza' ? '▲' : t === 'baja' ? '▼' : '▶';
+const flecha = t => t === 'alza' ? '▲' : t === 'baja' ? '▼' : t === 'incierto' ? '◆' : '▶';
 
 // Mini-gráfica SVG de los últimos 7 días
 function sparkline(datos, tendencia) {
@@ -96,10 +109,11 @@ function sparkline(datos, tendencia) {
 const DATOS_DEMO = {
   actualizado: "2026-07-09 05:30",
   precios: [
-    { producto: "Guayaba", presentacion: "caja 9 kg", calidad: "escala completa (8 calidades)", precio_min: 50, precio_frec: 170, precio_max: 270, variacion_dia: 0, tendencia: "estable", racha_dias: 0, nota: "Escala real por calidad (caja 9 kg): madura $50-70 · chiquita $100 · $120 · $150 · $170 · $200 · $250 · la mejor $270. Primer día de registro: la tendencia se construye desde hoy." },
-    { producto: "Jitomate saladette", presentacion: "caja 15 kg", calidad: "primera", precio_min: 280, precio_frec: 310, precio_max: 340, variacion_dia: 8.5, tendencia: "alza", racha_dias: 3, historial_7d: [255, 258, 252, 262, 275, 286, 310], nota: "Llegó poco de Sinaloa, se espera que siga subiendo" },
-    { producto: "Papa alpha", presentacion: "bulto 25 kg", calidad: "primera", precio_min: 320, precio_frec: 340, precio_max: 360, variacion_dia: -4.8, tendencia: "baja", racha_dias: 2, historial_7d: [378, 375, 380, 372, 368, 357, 340], nota: "Se está quedando, bajando desde el lunes" }
+    { producto: "Guayaba", presentacion: "caja 9 kg", calidad: "escala completa (8 calidades)", precio_min: 50, precio_frec: 170, precio_max: 270, variacion_dia: 0, tendencia: "estable", racha_dias: 0, estimacion: { direccion: "alza", factor: "Baja el corte en Calvillo por fin de temporada: menos entrada presiona al alza en calidades altas." }, nota: "Escala real por calidad (caja 9 kg): madura $50-70 · chiquita $100 · $120 · $150 · $170 · $200 · $250 · la mejor $270. Primer día de registro: la tendencia se construye desde hoy." },
+    { producto: "Jitomate saladette", presentacion: "caja 15 kg", calidad: "primera", precio_min: 280, precio_frec: 310, precio_max: 340, variacion_dia: 8.5, tendencia: "alza", racha_dias: 3, estimacion: { direccion: "alza", factor: "Pronóstico de helada en Sinaloa (SMN): llega menos producto, presión al alza." }, historial_7d: [255, 258, 252, 262, 275, 286, 310], nota: "Llegó poco de Sinaloa, se espera que siga subiendo" },
+    { producto: "Papa alpha", presentacion: "bulto 25 kg", calidad: "primera", precio_min: 320, precio_frec: 340, precio_max: 360, variacion_dia: -4.8, tendencia: "baja", racha_dias: 2, estimacion: { direccion: "baja", factor: "Se está quedando producto en pasillo: sobreoferta empuja el precio a la baja." }, historial_7d: [378, 375, 380, 372, 368, 357, 340], nota: "Se está quedando, bajando desde el lunes" }
   ],
+  aciertos_semana: { correctas: null, total: null },
   factores: [
     { tipo: "clima", descripcion: "Pronóstico de helada en zonas productoras de Sinaloa (SMN)", productos: ["Jitomate saladette"], direccion: "alza" },
     { tipo: "cosecha", descripcion: "Baja el corte de guayaba en Calvillo por fin de temporada", productos: ["Guayaba"], direccion: "alza" }
@@ -113,6 +127,29 @@ const DATOS_DEMO = {
 
 function pinta(d, esDemo) {
     document.getElementById('actualizado').textContent = 'Actualizado: ' + d.actualizado + (esDemo ? ' · DEMO con datos de ejemplo' : '');
+
+    // Estimación de hoy: dirección esperada por producto + marcador de aciertos
+    const ac = d.aciertos_semana || {};
+    const acTxt = (ac.correctas != null && ac.total != null) ? `${ac.correctas}/${ac.total}` : '—/—';
+    document.getElementById('marcador').insertAdjacentHTML('beforeend', `
+      <div class="marcador">
+        <span class="m-label">Aciertos de estimación<br>esta semana</span>
+        <span class="m-valor">${acTxt}</span>
+      </div>`);
+    const est = document.getElementById('estimacion');
+    d.precios.forEach(p => {
+      const e = p.estimacion;
+      if (!e) return;
+      const dir = e.direccion || 'incierto';
+      est.insertAdjacentHTML('beforeend', `
+        <div class="card est">
+          <span class="badge ${dir}">${flecha(dir)} ${dir.toUpperCase()}</span>
+          <div>
+            <div class="est-nombre">${p.producto}</div>
+            <div class="est-factor">${e.factor || ''}</div>
+          </div>
+        </div>`);
+    });
 
     const cont = document.getElementById('precios');
     d.precios.forEach(p => {
@@ -156,7 +193,7 @@ function pinta(d, esDemo) {
         <div class="card reco"><div class="num">${i + 1}</div><p>${r}</p></div>`);
     });
 
-    ['sec-precios', 'sec-factores', 'sec-recos'].forEach(id => document.getElementById(id).hidden = false);
+    ['sec-estimacion', 'sec-precios', 'sec-factores', 'sec-recos'].forEach(id => document.getElementById(id).hidden = false);
 }
 
 fetch('datos/datos.json')
