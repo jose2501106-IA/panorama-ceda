@@ -44,7 +44,7 @@ Captura manual → skill analista → reporte texto → WhatsApp. Meta: 8–10 c
 ```
 precios:   fecha, producto, presentacion, calidad, precio_min, precio_frec,
            precio_max, volumen, nota_contexto, fuente (jose|aportante_id)
-eventos:   fecha, tipo (clima|cosecha|flete|bloqueo|cambiario), descripcion,
+eventos:   fecha, tipo (clima|cosecha|flete|bloqueo|cambiario|arancel|politica|economia), descripcion,
            productos_afectados[], direccion_esperada (alza|baja|incierto), fuente_url
 clientes:  id, nombre, contacto, productos_contratados[], plan, etapa
            (prospecto|prueba|pago|renovo), fecha_alta
@@ -58,6 +58,11 @@ Fuentes gratuitas a consultar/mostrar:
 - **Flete:** precio de gasolina/diésel (CRE) y bloqueos carreteros (noticias).
 - **Cambiario:** tipo de cambio USD/MXN (Banxico) para productos importados.
 - **Referencia oficial:** SNIIM cuando esté disponible (suele estar en mantenimiento).
+- **Política comercial:** aranceles y cupos de importación/exportación (DOF, Secretaría de Economía) — afectan directo a productos importados o exportables (aguacate, jitomate, limón).
+- **Economía:** inflación de alimentos (INEGI/INPC quincenal), precio del diésel, salario mínimo/programas de apoyo al campo (cambian oferta y demanda).
+- **Regulación CEDA/CDMX:** cambios en cuotas, operativos, obras o reglas dentro de la Central (FICEDA, Gobierno CDMX).
+
+**Regla editorial adicional:** en temas políticos y económicos, SOLO hechos con efecto en precios y su dirección esperada. Cero opiniones ni colores partidistas: los clientes son de todas las ideas y la neutralidad es parte del producto.
 
 **Regla editorial:** se reporta el hecho y la dirección esperada ("helada en Sinaloa → presión al alza en jitomate"), NUNCA magnitudes inventadas. Si no hay certeza: "incierto". La credibilidad es el producto.
 
