@@ -3,16 +3,25 @@
   "precios": [
     {
       "producto": "Guayaba",
-      "presentacion": "caja 10 kg",
-      "calidad": "primera",
-      "precio_min": 170,
-      "precio_frec": 195,
-      "precio_max": 220,
-      "variacion_dia": 5.4,
-      "tendencia": "alza",
-      "racha_dias": 2,
-      "historial_7d": [178, 175, 180, 182, 179, 185, 195],
-      "nota": "EJEMPLO: corregir con precio real antes de la reunión"
+      "presentacion": "caja 9 kg",
+      "calidad": "escala completa (8 calidades)",
+      "precio_min": 50,
+      "precio_frec": 170,
+      "precio_max": 270,
+      "variacion_dia": 0,
+      "tendencia": "estable",
+      "racha_dias": 0,
+      "escala_calidades": [
+        { "calidad": "madura", "precio": "50-70" },
+        { "calidad": "chiquita", "precio": "100" },
+        { "calidad": "tercera", "precio": "120" },
+        { "calidad": "segunda baja", "precio": "150" },
+        { "calidad": "segunda", "precio": "170" },
+        { "calidad": "primera", "precio": "200" },
+        { "calidad": "extra", "precio": "250" },
+        { "calidad": "la mejor", "precio": "270" }
+      ],
+      "nota": "Escala real por calidad (caja 9 kg): madura $50-70 · chiquita $100 · $120 · $150 · $170 · $200 · $250 · la mejor $270. Primer día de registro: la tendencia se construye desde hoy."
     },
     {
       "producto": "Jitomate saladette",

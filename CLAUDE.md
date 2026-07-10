@@ -91,6 +91,14 @@ Fuentes gratuitas a consultar/mostrar:
 
 Clientes de pago · ingreso recurrente mensual · retención (85%+) · días con captura (90%+). Si una semana de desarrollo no movió ninguna de estas, la siguiente semana es de ventas, no de código.
 
+## 8.5 Aprendizaje de dominio (validado con experto en guayaba)
+
+Algunos productos NO se cotizan con un solo precio min/frec/máx: se cotizan por **escala de calidades**. Guayaba real (caja de 9 kg): madura $50-70, chiquita $100, luego $120, $150, $170, $200, $250 y "la mejor" $270. El campo opcional `escala_calidades: [{calidad, precio}]` en `datos/datos.json` ya guarda esto.
+
+**Backlog inmediato (primeras sesiones de vibe coding):**
+1. LÓGICA: que el modelo de datos y el render soporten productos con `escala_calidades` (tarjeta expandible que muestre la escalera de precios por calidad); la variación diaria debe calcularse POR calidad, no por promedio.
+2. UX/UI: rediseñar la tarjeta de producto para leerse en 5 segundos en un pasillo oscuro: contraste alto, tipografía grande, la escala de calidades como lista vertical precio-descendente.
+
 ## 9. Estado actual del código
 
 - `index.html` — Fase 1: precios del día, mini-gráficas SVG de 7 días (`historial_7d` en el JSON), factores externos, recomendaciones y botón CTA de WhatsApp. Mobile-first, sin dependencias externas.
