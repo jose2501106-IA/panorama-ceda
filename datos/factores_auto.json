@@ -1,0 +1,14 @@
+{
+  "generado": "2026-07-10 19:00",
+  "fuente": "Open-Meteo (open-meteo.com), datos CC BY 4.0",
+  "factores": [
+    {
+      "tipo": "clima",
+      "descripcion": "Calor extremo en Culiacán, Sinaloa: máxima de 40°C prevista en 72 h (Open-Meteo)",
+      "productos": [
+        "Jitomate saladette"
+      ],
+      "direccion": "incierto"
+    }
+  ]
+}
