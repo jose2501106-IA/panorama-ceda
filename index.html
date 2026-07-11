@@ -14,6 +14,16 @@
   header { background: var(--azul); color: #fff; padding: 18px 16px 14px; }
   header h1 { font-size: 1.25rem; }
   header .sub { font-size: .8rem; opacity: .85; margin-top: 4px; }
+  nav { position: sticky; top: 0; z-index: 10; background: var(--azul); display: flex; gap: 6px; padding: 8px 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  nav a { color: #fff; text-decoration: none; font-size: .78rem; font-weight: 600; padding: 6px 12px; border-radius: 20px; background: rgba(255,255,255,.14); white-space: nowrap; }
+  #mapa-mx { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-bottom: 10px; }
+  .tile { aspect-ratio: 1; border-radius: 6px; background: #dbe4e8; color: var(--azul); font-size: .58rem; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid transparent; user-select: none; }
+  .tile.sel { background: var(--azul); color: #fff; border-color: var(--verde); }
+  #panel-estado .clima-datos { display: flex; gap: 14px; margin: 8px 0; flex-wrap: wrap; }
+  #panel-estado .clima-datos div { text-align: center; }
+  #panel-estado .clima-num { font-size: 1.15rem; font-weight: 800; }
+  #panel-estado .clima-lbl { font-size: .68rem; color: var(--gris); }
+  .mapa-hint { font-size: .78rem; color: var(--gris); margin: 4px 4px 8px; }
   main { max-width: 560px; margin: 0 auto; padding: 14px 12px 40px; }
   h2 { font-size: .95rem; color: var(--azul); text-transform: uppercase; letter-spacing: .04em; margin: 18px 4px 8px; }
   .card { background: var(--tarjeta); border-radius: 12px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
@@ -55,6 +65,13 @@
   <h1>Panorama CEDA</h1>
   <div class="sub" id="actualizado">Cargando…</div>
 </header>
+<nav>
+  <a href="#sec-estimacion">Estimación</a>
+  <a href="#sec-precios">Precios</a>
+  <a href="#sec-mapa">Mapa climático</a>
+  <a href="#sec-factores">Factores</a>
+  <a href="#sec-recos">Recomendaciones</a>
+</nav>
 <main>
   <div id="error">
     No se pudieron cargar los datos. Si abriste este archivo con doble clic, el navegador bloquea la lectura local de <code>datos/datos.json</code>.<br><br>
@@ -68,6 +85,12 @@
   <section id="sec-precios" hidden>
     <h2>Precios de hoy</h2>
     <div id="precios"></div>
+  </section>
+  <section id="sec-mapa">
+    <h2>Mapa climático de abasto</h2>
+    <p class="mapa-hint">Toca un estado: clima de las próximas 72 h en su zona productora y qué le surte a la Central.</p>
+    <div id="mapa-mx"></div>
+    <div id="panel-estado"></div>
   </section>
   <section id="sec-factores" hidden>
     <h2>¿Por qué se va a mover el precio?</h2>
@@ -219,6 +242,95 @@ fetch('datos/factores_auto.json')
     document.getElementById('sec-factores').hidden = false;
   })
   .catch(() => {});
+
+// ===== Mapa climático de abasto (32 estados, mosaico) =====
+// col/row: posición aproximada en el mosaico · productos: qué surte principalmente a la CEDA
+const ESTADOS = [
+  { ab:"BC",  nombre:"Baja California",     col:0, row:0, lat:32.63, lon:-115.45, productos:"fresa, jitomate, cebollín" },
+  { ab:"SON", nombre:"Sonora",              col:1, row:0, lat:29.07, lon:-110.96, productos:"uva, papa, calabaza, sandía" },
+  { ab:"CHH", nombre:"Chihuahua",           col:2, row:0, lat:28.63, lon:-106.08, productos:"manzana, nuez, cebolla, chile" },
+  { ab:"COA", nombre:"Coahuila",            col:3, row:0, lat:25.42, lon:-101.00, productos:"melón, nuez, papa" },
+  { ab:"NL",  nombre:"Nuevo León",          col:4, row:0, lat:25.67, lon:-100.31, productos:"naranja, papa" },
+  { ab:"TAM", nombre:"Tamaulipas",          col:5, row:0, lat:23.74, lon:-99.15,  productos:"cítricos, chile, cebolla" },
+  { ab:"BCS", nombre:"Baja California Sur", col:0, row:1, lat:24.14, lon:-110.31, productos:"jitomate, fresa, albahaca" },
+  { ab:"SIN", nombre:"Sinaloa",             col:1, row:1, lat:24.81, lon:-107.39, productos:"jitomate, chile, pepino, hortalizas" },
+  { ab:"DGO", nombre:"Durango",             col:2, row:1, lat:24.02, lon:-104.65, productos:"manzana, frijol, nuez" },
+  { ab:"ZAC", nombre:"Zacatecas",           col:3, row:1, lat:22.77, lon:-102.58, productos:"chile seco, frijol, guayaba, ajo" },
+  { ab:"SLP", nombre:"San Luis Potosí",     col:4, row:1, lat:22.16, lon:-100.99, productos:"naranja, jitomate, chile" },
+  { ab:"NAY", nombre:"Nayarit",             col:1, row:2, lat:21.51, lon:-104.89, productos:"mango, plátano, jícama" },
+  { ab:"AGS", nombre:"Aguascalientes",      col:2, row:2, lat:21.85, lon:-102.71, productos:"guayaba (Calvillo), lechuga, ajo" },
+  { ab:"GTO", nombre:"Guanajuato",          col:3, row:2, lat:20.57, lon:-101.19, productos:"cebolla, brócoli, fresa, papa" },
+  { ab:"QRO", nombre:"Querétaro",           col:4, row:2, lat:20.59, lon:-100.39, productos:"hortalizas, lechuga, jitomate" },
+  { ab:"HGO", nombre:"Hidalgo",             col:5, row:2, lat:20.12, lon:-98.73,  productos:"nopal, calabaza, maíz" },
+  { ab:"VER", nombre:"Veracruz",            col:6, row:2, lat:19.17, lon:-96.13,  productos:"naranja, limón, plátano, piña, papaya" },
+  { ab:"YUC", nombre:"Yucatán",             col:8, row:2, lat:20.97, lon:-89.62,  productos:"limón, naranja, chile habanero" },
+  { ab:"QR",  nombre:"Quintana Roo",        col:9, row:2, lat:19.66, lon:-88.05,  productos:"piña, chile, sandía" },
+  { ab:"COL", nombre:"Colima",              col:0, row:3, lat:19.12, lon:-104.01, productos:"limón, plátano, coco" },
+  { ab:"JAL", nombre:"Jalisco",             col:1, row:3, lat:20.36, lon:-102.77, productos:"aguacate, berries, limón, maíz" },
+  { ab:"MIC", nombre:"Michoacán",           col:2, row:3, lat:19.42, lon:-102.06, productos:"aguacate, limón, fresa, guayaba" },
+  { ab:"MEX", nombre:"Estado de México",    col:3, row:3, lat:19.29, lon:-99.65,  productos:"papa, haba, zanahoria, flor" },
+  { ab:"CMX", nombre:"Ciudad de México",    col:4, row:3, lat:19.19, lon:-99.02,  productos:"nopal (Milpa Alta), romero" },
+  { ab:"TLX", nombre:"Tlaxcala",            col:5, row:3, lat:19.31, lon:-98.24,  productos:"maíz, papa, haba" },
+  { ab:"PUE", nombre:"Puebla",              col:6, row:3, lat:19.04, lon:-98.20,  productos:"papa, flor, cilantro, elote" },
+  { ab:"TAB", nombre:"Tabasco",             col:7, row:3, lat:17.99, lon:-92.93,  productos:"plátano, cacao, piña" },
+  { ab:"CAM", nombre:"Campeche",            col:8, row:3, lat:19.83, lon:-90.53,  productos:"mango, sandía, calabaza" },
+  { ab:"GRO", nombre:"Guerrero",            col:2, row:4, lat:17.55, lon:-99.51,  productos:"mango, melón, jamaica, limón" },
+  { ab:"MOR", nombre:"Morelos",             col:3, row:4, lat:18.68, lon:-99.10,  productos:"jitomate, nopal, aguacate, arroz" },
+  { ab:"OAX", nombre:"Oaxaca",              col:4, row:4, lat:17.07, lon:-96.72,  productos:"limón, mango, papaya, ajo" },
+  { ab:"CHS", nombre:"Chiapas",             col:6, row:4, lat:16.75, lon:-93.12,  productos:"plátano, mango, café, cacao" },
+];
+
+// Mismas reglas conservadoras que el pipeline (scripts/actualiza_factores.py)
+function señalClima(tmin, tmax, lluvia) {
+  if (tmin != null && tmin <= 2)  return { tipo: "Riesgo de helada",  dir: "alza",     clase: "alza",     texto: "presión al alza en lo que surte este estado" };
+  if (lluvia >= 50)               return { tipo: "Lluvia fuerte",     dir: "incierto", clase: "incierto", texto: "posibles retrasos en corte y transporte" };
+  if (tmax != null && tmax >= 38) return { tipo: "Calor extremo",     dir: "incierto", clase: "incierto", texto: "estrés de cultivo; vigilar calidad y merma" };
+  return { tipo: "Sin señal de riesgo", dir: "estable", clase: "estable", texto: "abasto climáticamente estable desde este estado" };
+}
+
+const mapa = document.getElementById('mapa-mx');
+ESTADOS.forEach((e, i) => {
+  const t = document.createElement('div');
+  t.className = 'tile'; t.textContent = e.ab; t.title = e.nombre;
+  t.style.gridColumn = e.col + 1; t.style.gridRow = e.row + 1;
+  t.addEventListener('click', () => muestraEstado(i, t));
+  mapa.appendChild(t);
+});
+
+function muestraEstado(i, tile) {
+  document.querySelectorAll('.tile.sel').forEach(x => x.classList.remove('sel'));
+  tile.classList.add('sel');
+  const e = ESTADOS[i];
+  const panel = document.getElementById('panel-estado');
+  panel.innerHTML = `<div class="card"><div class="prod-nombre">${e.nombre}</div><div class="prod-meta">Consultando clima de la zona productora…</div></div>`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${e.lat}&longitude=${e.lon}&daily=temperature_2m_min,temperature_2m_max,precipitation_sum&forecast_days=3&timezone=America%2FMexico_City`;
+  fetch(url)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(d => {
+      const dd = d.daily || {};
+      const tmin = Math.min(...(dd.temperature_2m_min || []).filter(v => v != null));
+      const tmax = Math.max(...(dd.temperature_2m_max || []).filter(v => v != null));
+      const lluvia = (dd.precipitation_sum || []).filter(v => v != null).reduce((a, b) => a + b, 0);
+      const s = señalClima(tmin, tmax, lluvia);
+      panel.innerHTML = `
+        <div class="card">
+          <div class="prod-top"><div>
+            <div class="prod-nombre">${e.nombre}</div>
+            <div class="prod-meta">Surte a la CEDA: ${e.productos}</div>
+          </div></div>
+          <div class="clima-datos">
+            <div><div class="clima-num">${Math.round(tmin)}°</div><div class="clima-lbl">mín 72 h</div></div>
+            <div><div class="clima-num">${Math.round(tmax)}°</div><div class="clima-lbl">máx 72 h</div></div>
+            <div><div class="clima-num">${Math.round(lluvia)} mm</div><div class="clima-lbl">lluvia 72 h</div></div>
+          </div>
+          <span class="badge ${s.clase}">${s.tipo.toUpperCase()}</span>
+          <div class="nota">${s.texto.charAt(0).toUpperCase() + s.texto.slice(1)}. Fuente: Open-Meteo, zona productora de referencia.</div>
+        </div>`;
+    })
+    .catch(() => {
+      panel.innerHTML = `<div class="card"><div class="prod-nombre">${e.nombre}</div><div class="prod-meta">Surte a la CEDA: ${e.productos}</div><div class="nota">No se pudo consultar el clima (se requiere internet).</div></div>`;
+    });
+}
 
 // Contacto: número ensamblado en tiempo de ejecución (anti-scrapers)
 (function () {
