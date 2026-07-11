@@ -29,6 +29,12 @@ Captura manual → skill analista → reporte texto → WhatsApp. Meta: 8–10 c
 - Hosting: GitHub Pages o Vercel (gratis). Sin login, sin base de datos. Se comparte por link de WhatsApp.
 - Stack: HTML + CSS + JS vanilla en `index.html`. Mientras menos piezas, menos se rompe.
 
+### Fase 1.5 — Pipeline automático de datos · YA CONSTRUIDO
+- `.github/workflows/datos.yml`: GitHub Actions corre diario a las 3:30 am CDMX (gratis).
+- `scripts/actualiza_factores.py`: consulta Open-Meteo por zona productora (config en `ZONAS`), aplica reglas conservadoras (helada ≤2°C → alza; lluvia ≥50mm o calor ≥38°C → incierto), escribe `datos/factores_auto.json` y acumula histórico en `datos/ceda.db` (SQLite = la base SQL del proyecto hasta Fase 2).
+- El frontend lee `factores_auto.json` y pinta los factores con etiqueta AUTO. Cambiar la frecuencia a horaria = editar una línea del cron (no hacerlo sin razón: los precios se definen una vez por madrugada).
+- **RAG vectorizado: pospuesto a propósito.** Mientras el histórico quepa en el contexto de Claude (meses), la "IA conversacional" es la skill analista leyendo el CSV/SQLite. Cuando llegue Fase 2 con Supabase, el camino natural es pgvector.
+
 ### Fase 2 — App con cuentas · meses 3–6 (SOLO si hay 20+ clientes pagando)
 - Stack sugerido: Next.js + Supabase (plan gratis) + Vercel.
 - Cada cliente inicia sesión y ve SOLO sus productos contratados → Supabase **RLS** (Row Level Security) obligatorio desde el primer día de esta fase.

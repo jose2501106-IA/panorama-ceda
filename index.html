@@ -201,6 +201,25 @@ fetch('datos/datos.json')
   .then(d => pinta(d, false))
   .catch(() => pinta(DATOS_DEMO, true)); // sin servidor (file://) usa los datos de respaldo
 
+// Factores automáticos (pipeline diario de GitHub Actions + Open-Meteo).
+// Si el archivo no existe (demo offline), falla en silencio.
+fetch('datos/factores_auto.json')
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(a => {
+    if (!a.factores || !a.factores.length) return;
+    const fac = document.getElementById('factores');
+    a.factores.forEach(f => {
+      const prods = (f.productos && f.productos.length) ? ` · afecta: ${f.productos.join(', ')}` : '';
+      fac.insertAdjacentHTML('beforeend', `
+        <div class="card">
+          <div class="factor-tipo">${f.tipo} · presión: ${f.direccion} · AUTO</div>
+          <div class="factor-desc">${f.descripcion}${prods}</div>
+        </div>`);
+    });
+    document.getElementById('sec-factores').hidden = false;
+  })
+  .catch(() => {});
+
 // Contacto: número ensamblado en tiempo de ejecución (anti-scrapers)
 (function () {
   const p = [5, 2, 5, 5, 1, 3, 8, 5, 0, 8, 8, 3].join('');
