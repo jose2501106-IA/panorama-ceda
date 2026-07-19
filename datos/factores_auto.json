@@ -1,14 +1,5 @@
 {
-  "generado": "2026-07-18 04:46",
+  "generado": "2026-07-19 04:52",
   "fuente": "Open-Meteo (open-meteo.com), datos CC BY 4.0",
-  "factores": [
-    {
-      "tipo": "clima",
-      "descripcion": "Lluvia fuerte en Culiacán, Sinaloa: lluvia acumulada de 53 mm prevista en 72 h (Open-Meteo)",
-      "productos": [
-        "Jitomate saladette"
-      ],
-      "direccion": "incierto"
-    }
-  ]
+  "factores": []
 }
